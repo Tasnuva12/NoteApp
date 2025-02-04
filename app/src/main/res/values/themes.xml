@@ -2,4 +2,5 @@
 <resources>
 
     <style name="Theme.NoteApp" parent="android:Theme.Material.Light.NoActionBar" />
+    <item name="backgroundGray" type="color">@color/light_gray</item>
 </resources>
