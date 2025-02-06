@@ -1,7 +1,9 @@
 package com.example.noteapp
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -20,7 +22,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -50,12 +51,12 @@ fun HomeScreen(modifier: Modifier, homeViewModel: HomeScreenViewModel = viewMode
                         .height(20.dp)
 
                 )
-                Spacer(modifier = Modifier.padding(start=10.dp))
+                Spacer(modifier = Modifier.padding(start = 10.dp))
 
                 BasicTextField(
                     value = text,
                     onValueChange = { newText -> homeViewModel.setSearchText(newText) },
-                    modifier=Modifier.align(Alignment.CenterVertically),
+                    modifier = Modifier.align(Alignment.CenterVertically),
                     textStyle = regularTextStyle,
 
 
@@ -75,6 +76,31 @@ fun HomeScreen(modifier: Modifier, homeViewModel: HomeScreenViewModel = viewMode
                 )
 
 
+            }
+        }
+        Spacer(modifier = Modifier.padding(10.dp))
+        Box(
+            modifier = Modifier
+                .height(92.dp)
+                .width(51.dp)
+                .clip(RoundedCornerShape(20.dp))
+                .background(colorResource(id = R.color.white))
+                .border(
+                    width = 2.dp,
+                    color = colorResource(R.color.light_gray),
+                    shape = RoundedCornerShape(20.dp)
+
+                )
+               )
+         {
+
+            Column(modifier=Modifier.align(Alignment.Center).padding(2.dp)){
+                Text("Tue", modifier = Modifier.align(Alignment.CenterHorizontally))
+                Text("23",
+                    modifier = Modifier.align(Alignment.CenterHorizontally)
+
+                )
+                Text("April", modifier = Modifier.align(Alignment.CenterHorizontally))
             }
         }
     }
