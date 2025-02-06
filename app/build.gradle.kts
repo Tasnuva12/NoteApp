@@ -66,6 +66,9 @@ dependencies {
 
     // LiveData support for Compose
     implementation(libs.androidx.compose.runtime.livedata)
+  //coroutine
+    implementation(libs.kotlinx.coroutines.core)
+
 
     // Testing
     testImplementation(libs.junit)
