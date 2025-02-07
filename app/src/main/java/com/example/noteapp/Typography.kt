@@ -23,3 +23,16 @@ val regularTextStyle = TextStyle(
     fontSize = 14.sp
 
 )
+val dateTextStyle = TextStyle(
+    fontFamily = productSansFontFamily,
+    fontWeight = FontWeight.Medium,
+    fontSize = 12.sp
+
+)
+val dateNumberTextStyle = TextStyle(
+    fontFamily = productSansFontFamily,
+    fontWeight = FontWeight.ExtraBold,
+    fontSize = 20.sp
+
+)
+

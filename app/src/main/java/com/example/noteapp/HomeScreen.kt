@@ -38,26 +38,25 @@ import java.time.LocalDate
 import java.util.Locale
 
 
-@RequiresApi(Build.VERSION_CODES.O)
+
 @Composable
 fun HomeScreen(modifier: Modifier, homeViewModel: HomeScreenViewModel = viewModel()) {
 
-
     val text by homeViewModel.searchText.observeAsState("")
-    val dates by homeViewModel.dates.collectAsState()
+    val dates by homeViewModel.dates.collectAsState(emptyList())
 
     LaunchedEffect(Unit) {
         homeViewModel.updateDates()
     }
+
     Column(modifier = modifier.padding(start = 16.dp, top = 20.dp, end = 16.dp)) {
         Box(
             modifier = Modifier
                 .height(44.dp)
                 .width(305.dp)
                 .clip(RoundedCornerShape(16.dp)) // Adds rounded corners
-                .background(colorResource(id = R.color.light_gray)),
-
-            ) {
+                .background(colorResource(id = R.color.light_gray))
+        ) {
             Row(modifier = Modifier.padding(start = 16.dp, top = 10.dp)) {
                 Image(
                     painter = painterResource(id = R.drawable.searchnormal1),
@@ -65,7 +64,6 @@ fun HomeScreen(modifier: Modifier, homeViewModel: HomeScreenViewModel = viewMode
                     modifier = Modifier
                         .width(20.dp)
                         .height(20.dp)
-
                 )
                 Spacer(modifier = Modifier.padding(start = 10.dp))
 
@@ -74,8 +72,6 @@ fun HomeScreen(modifier: Modifier, homeViewModel: HomeScreenViewModel = viewMode
                     onValueChange = { newText -> homeViewModel.setSearchText(newText) },
                     modifier = Modifier.align(Alignment.CenterVertically),
                     textStyle = regularTextStyle,
-
-
                     singleLine = true,
                     decorationBox = { innerTextField ->
                         Box {
@@ -90,28 +86,25 @@ fun HomeScreen(modifier: Modifier, homeViewModel: HomeScreenViewModel = viewMode
                         }
                     }
                 )
-
-
             }
         }
         Spacer(modifier = Modifier.padding(10.dp))
+
         LazyRow(
-            modifier=Modifier.padding(16.dp),
+
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-             items(dates){
-                 date->DateCard(
-                 modifier = Modifier,
-                 dayOfWeek = date.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault()),
-                 date = date.dayOfMonth.toString(),
-                 month = date.month.getDisplayName(TextStyle.SHORT, Locale.getDefault()),
-                 isToday = date == LocalDate.now()
+            items(dates.size) { index->
+                val  date =dates[index]
+                DateCard(
+                    dayOfWeek = date.dayOfWeek.name.take(3),
+                    date = date.dayOfMonth.toString(),
+                    month = date.month.name.take(3),
+                    isToday = date == LocalDate.now(),
+                    modifier = Modifier
+                )
+            }
 
-             )
-
-             }
         }
-        DateCard(modifier=Modifier)
-
     }
 }
