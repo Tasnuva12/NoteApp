@@ -1,9 +1,13 @@
 import org.gradle.kotlin.dsl.libs
 
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+
+    alias(libs.plugins.kotlinx.serialization)
+
 }
 
 android {
@@ -68,6 +72,20 @@ dependencies {
     implementation(libs.androidx.compose.runtime.livedata)
   //coroutine
     implementation(libs.kotlinx.coroutines.core)
+
+    //Room database
+    implementation ("androidx.room:room-runtime:2.6.1")
+    annotationProcessor("androidx.room:room-compiler:2.6.1")
+
+    //GSON
+    implementation ("com.google.code.gson:gson:2.10.1")
+
+    //Serializable
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.0")
+
+    implementation(libs.kotlinx.serialization.json)
+
+
 
 
     // Testing

@@ -17,8 +17,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import com.example.noteapp.R
-import com.example.noteapp.dateNumberTextStyle
-import com.example.noteapp.dateTextStyle
+import com.example.noteapp.ui.theme.dateNumberTextStyle
+import com.example.noteapp.ui.theme.dateTextStyle
 
 
 @Composable

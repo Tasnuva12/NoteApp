@@ -1,11 +1,7 @@
-package com.example.noteapp
+package com.example.noteapp.screen
 
-import android.os.Build
-import androidx.annotation.RequiresApi
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,25 +24,32 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import com.example.noteapp.R
 import com.example.noteapp.components.DateCard
+import com.example.noteapp.ui.theme.regularTextStyle
 import com.example.noteapp.viewmodels.HomeScreenViewModel
 import java.time.LocalDate
-import java.util.Locale
-
 
 
 @Composable
-fun HomeScreen(modifier: Modifier, homeViewModel: HomeScreenViewModel = viewModel()) {
+fun HomeScreen(  navController: NavController? = null,modifier: Modifier, homeViewModel: HomeScreenViewModel = viewModel()) {
 
     val text by homeViewModel.searchText.observeAsState("")
     val dates by homeViewModel.dates.collectAsState(emptyList())
 
-    LaunchedEffect(Unit) {
-        homeViewModel.updateDates()
+
+    //check if it's time to call updateDates function
+    val currentDate = LocalDate.now()
+    val lastDate = dates.lastOrNull()
+
+    LaunchedEffect(currentDate) {
+       if(lastDate==null || currentDate.isAfter(lastDate)){
+           homeViewModel.updateDates()
+       }
     }
 
     Column(modifier = modifier.padding(start = 16.dp, top = 20.dp, end = 16.dp)) {

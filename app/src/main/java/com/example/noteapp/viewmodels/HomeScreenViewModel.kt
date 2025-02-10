@@ -19,7 +19,7 @@ class HomeScreenViewModel() : ViewModel() {
 
     //dates
 
-    private val _dates= MutableStateFlow(generateNextDates())
+    private val _dates= MutableStateFlow(generateNextDates( ))
 
     val dates : StateFlow<List<LocalDate>> = _dates.asStateFlow()
 
@@ -33,9 +33,9 @@ class HomeScreenViewModel() : ViewModel() {
     //update for next 6 date
     fun  updateDates(){
         val today= LocalDate.now()
-        val lastDate = _dates.value.lastOrNull() ?: today
-        if(today.isAfter(lastDate)){
-            _dates.value=generateNextDates(today)
+        val lastDate = _dates.value.lastOrNull()
+        if( lastDate!=null && today.isAfter(lastDate)){
+            _dates.value=generateNextDates(lastDate)
         }
     }
     //show a set of date (maximum 6)
