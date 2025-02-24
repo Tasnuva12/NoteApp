@@ -1,13 +1,12 @@
 import org.gradle.kotlin.dsl.libs
 
-
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-
     alias(libs.plugins.kotlinx.serialization)
-
+    id("kotlin-kapt")
+    id("com.google.dagger.hilt.android")
 }
 
 android {
@@ -70,23 +69,29 @@ dependencies {
 
     // LiveData support for Compose
     implementation(libs.androidx.compose.runtime.livedata)
-  //coroutine
+
+    // Coroutine
     implementation(libs.kotlinx.coroutines.core)
 
-    //Room database
-    implementation ("androidx.room:room-runtime:2.6.1")
-    annotationProcessor("androidx.room:room-compiler:2.6.1")
+    // Room database
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+    kapt(libs.androidx.room.compiler)
 
-    //GSON
-    implementation ("com.google.code.gson:gson:2.10.1")
+    // GSON
+    implementation("com.google.code.gson:gson:2.10.1")
 
-    //Serializable
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.0")
-
+    // Kotlin Serialization
     implementation(libs.kotlinx.serialization.json)
 
+    // Hilt
+    implementation(libs.hilt)
+    kapt(libs.hiltcompiler)
+    implementation(libs.androidx.hilt.navigation.compose)
 
-
+    //LazyVerticalGrid
+    implementation ("androidx.compose.foundation:foundation:1.4.0")
+    implementation ("androidx.compose.foundation:foundation-layout:1.4.0")
 
     // Testing
     testImplementation(libs.junit)
@@ -96,4 +101,8 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+}
+
+kapt {
+    correctErrorTypes = true
 }

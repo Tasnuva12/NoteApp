@@ -22,6 +22,13 @@ val regularTextStyle = TextStyle(
     fontSize = 14.sp
 
 )
+val noteTextStyle = TextStyle(
+    fontFamily = productSansFontFamily,
+    fontWeight = FontWeight.Normal,
+    fontSize = 18.sp
+
+)
+
 val dateTextStyle = TextStyle(
     fontFamily = productSansFontFamily,
     fontWeight = FontWeight.Medium,
@@ -35,3 +42,18 @@ val dateNumberTextStyle = TextStyle(
 
 )
 
+val titleTextStyle= TextStyle(
+    fontFamily = productSansFontFamily,
+    fontWeight = FontWeight.ExtraBold,
+    fontSize = 40.sp,
+
+)
+val titleOfCard=TextStyle(
+    fontFamily = productSansFontFamily,
+    fontWeight = FontWeight.ExtraBold,
+    fontSize = 14.sp)
+val descOfCard= TextStyle(
+    fontFamily = productSansFontFamily,
+    fontWeight = FontWeight.Normal,
+    fontSize = 12.sp
+)
