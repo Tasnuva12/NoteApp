@@ -40,6 +40,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import androidx.work.OneTimeWorkRequestBuilder
 import com.example.noteapp.R
 import com.example.noteapp.Screen
 import com.example.noteapp.components.DateCard
@@ -53,34 +54,25 @@ import java.time.LocalDate
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun HomeScreen(  navController: NavController? = null,
-                 modifier: Modifier, homeViewModel: HomeScreenViewModel = viewModel(),noteViewModel: NoteScreenViewModel= hiltViewModel()
+                 modifier: Modifier, homeViewModel: HomeScreenViewModel = hiltViewModel(),noteViewModel: NoteScreenViewModel= hiltViewModel()
 ) {
 
     val text by homeViewModel.searchText.observeAsState("")
     //val dates by homeViewModel.dates.collectAsState(emptyList())
-
-
-    //check if it's time to call updateDates function
-
-
     val dates by homeViewModel.dates.collectAsState()
     val currentDate by homeViewModel.currentDate.collectAsState()
-    val lastDate=dates.lastOrNull()
 
-        //Update current date when app starts
-    LaunchedEffect(Unit) {
-        homeViewModel.updateDates()
-    }
+
+
+
+
+
+
 
 
     // Check if the last date has passed and update dates if necessary
-    LaunchedEffect(lastDate) {
 
 
-          homeViewModel.updateDates()
-
-
-    }
 
     Box(
         modifier = Modifier.fillMaxSize()
@@ -102,7 +94,7 @@ fun HomeScreen(  navController: NavController? = null,
                         contentDescription = "Search Icon",
                         modifier = Modifier.size(20.dp)
                     )
-                    Spacer(modifier = Modifier.width(10.dp))
+                     Spacer(modifier = Modifier.width(10.dp))
                     BasicTextField(
                         value = text,
                         onValueChange = { newText -> homeViewModel.setSearchText(newText) },

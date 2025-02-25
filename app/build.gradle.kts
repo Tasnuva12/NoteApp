@@ -93,6 +93,10 @@ dependencies {
     implementation ("androidx.compose.foundation:foundation:1.4.0")
     implementation ("androidx.compose.foundation:foundation-layout:1.4.0")
 
+
+    //workmanager
+    implementation ("androidx.work:work-runtime:2.10.0")
+
     // Testing
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

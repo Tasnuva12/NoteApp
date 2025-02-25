@@ -1,10 +1,20 @@
 package com.example.noteapp.viewmodels
 
+import android.app.Application
+import android.content.Context
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
+import com.example.noteapp.MyApplication
+import com.example.noteapp.UpdateDateWorker
+import com.example.noteapp.utils.DataStorage
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -12,62 +22,86 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.flow.lastOrNull
 import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.LocalTime
+import java.time.temporal.ChronoUnit
+import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 
+@HiltViewModel
+class HomeScreenViewModel  @Inject constructor(application: Application) : ViewModel() {
 
-
-class HomeScreenViewModel() : ViewModel() {
-
-    //search
     private val _searchText = MutableLiveData<String>()
-    val searchText: LiveData<String> get()=_searchText
+    val searchText: LiveData<String> get() = _searchText
 
-    //dates
+    private val _dates = MutableStateFlow(generateNextDates())
+    val dates: StateFlow<List<LocalDate>> = _dates.asStateFlow()
 
-    private val _dates= MutableStateFlow(generateNextDates( ))
+    private val dataStorage = DataStorage(application)
 
-    val dates : StateFlow<List<LocalDate>> = _dates.asStateFlow()
+    private val handler = Handler(Looper.getMainLooper())
 
-
-    //current Date
+    // In ViewModel
     private val _currentDate = MutableStateFlow(LocalDate.now())
     val currentDate: StateFlow<LocalDate> = _currentDate.asStateFlow()
-    fun setCurrentDate(){
-        _currentDate.value= LocalDate.now()
 
+    init {
+        updateDates()
+        startMidnightUpdateCheck()
+        scheduleDailyWorker(application)
     }
 
-
-
-
-    fun setSearchText(text:String){
-        _searchText.value=text
+    fun setSearchText(text: String) {
+        _searchText.value = text
     }
 
-    //update for next 6 date1
-    fun  updateDates(){
+    fun updateDates() {
+        val today = LocalDate.now()
+        _currentDate.value = today
+        val lastSavedDate = dataStorage.getDate()
+
+
         val lastDate=_dates.value.lastOrNull()
-
-        val currentDate= _currentDate.value
-
-
-        if(lastDate==null||currentDate.isAfter(lastDate)){
-            val newDates=generateNextDates(currentDate)
-            if(newDates!=_dates.value)
-            {
-                _dates.value = newDates
-
-            }
+        if (lastDate == null || lastDate < today) {
+            _dates.value = generateNextDates()
+        }
+        if (lastSavedDate != today) {
+            dataStorage.saveDate(today)
 
         }
 
-
-
-    }
-    //show a set of date (maximum 6)
-    private fun generateNextDates(startDate: LocalDate= LocalDate.now()):List<LocalDate> {
-
-        return(0..4).map{startDate.plusDays(it.toLong())}
     }
 
+    private fun generateNextDates(): List<LocalDate> {
+        return List(5) { LocalDate.now().plusDays(it.toLong()) }
+    }
 
+    private fun startMidnightUpdateCheck() {
+        val delayUntilMidnight = calculateDelayUntilMidnight()
+        handler.postDelayed({ updateDates() }, delayUntilMidnight)
+    }
+
+    fun scheduleDailyWorker(context: Context) {
+        val delayToMidnight = calculateDelayUntilMidnight()
+        val workRequest = PeriodicWorkRequestBuilder<UpdateDateWorker>(1, TimeUnit.DAYS)
+            .setInitialDelay(delayToMidnight, TimeUnit.MILLISECONDS)
+            .build()
+
+        WorkManager.getInstance(context).enqueueUniquePeriodicWork(
+            "DailyDateUpdate",
+            ExistingPeriodicWorkPolicy.UPDATE,
+            workRequest
+        )
+    }
+
+    fun calculateDelayUntilMidnight(): Long {
+        val now = LocalDateTime.now()
+        val midnight = now.toLocalDate().plusDays(1).atStartOfDay()
+        return ChronoUnit.MILLIS.between(now, midnight)
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        handler.removeCallbacksAndMessages(null)
+    }
 }
