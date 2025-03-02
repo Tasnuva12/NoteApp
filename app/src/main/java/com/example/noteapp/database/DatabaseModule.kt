@@ -28,4 +28,19 @@ object DatabaseModule {
         return db.getNoteDAO()
 
     }
+
+    @Provides
+    @Singleton
+    fun provideDateDatabase(@ApplicationContext context:Context): DateDatabase{
+        return Room.databaseBuilder(
+            context.applicationContext,
+            DateDatabase::class.java,
+            "date_db"
+        ) .fallbackToDestructiveMigration() .build()
+
+    }
+    @Provides
+    fun provideDateDAO(db: DateDatabase): DateDAO{
+        return db.getDateDAO()
+    }
 }

@@ -2,6 +2,7 @@ package com.example.noteapp.screen
 
 import NoteStaggerGrid
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -62,14 +63,6 @@ fun HomeScreen(  navController: NavController? = null,
     val dates by homeViewModel.dates.collectAsState()
     val currentDate by homeViewModel.currentDate.collectAsState()
 
-
-
-
-
-
-
-
-
     // Check if the last date has passed and update dates if necessary
 
 
@@ -120,6 +113,7 @@ fun HomeScreen(  navController: NavController? = null,
             Spacer(modifier = Modifier.height(10.dp))
 
             LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Log.d("HomeScreen", "Updated DateEntity List: $dates")
                 items(dates.size) { index ->
                     val date = dates[index]
                     DateCard(
