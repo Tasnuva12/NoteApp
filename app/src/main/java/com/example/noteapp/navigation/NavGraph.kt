@@ -29,7 +29,7 @@ fun NavGraph(navController: NavHostController,paddingValues: PaddingValues){
       }
 
         composable(
-            route = "${Screen.NoteScreen.route}/{noteId}?",
+            route = "${Screen.NoteScreen.route}/{noteId}",
             arguments = listOf(
                 navArgument("noteId") {
                     type = NavType.StringType

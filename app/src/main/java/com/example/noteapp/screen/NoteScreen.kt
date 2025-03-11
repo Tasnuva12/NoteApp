@@ -34,7 +34,7 @@ import com.example.noteapp.viewmodels.NoteScreenViewModel
 @Composable
 
 fun NoteScreen(
-    navController: NavController? = null, modifier: Modifier = Modifier,
+    navController: NavController, modifier: Modifier = Modifier,
     noteViewModel: NoteScreenViewModel = hiltViewModel(),
     noteId: String? = "",
     noteTitle: String? = "",
@@ -53,6 +53,9 @@ fun NoteScreen(
         if (noteId != null && noteTitle != null && noteDescription != null) {
             noteViewModel.setTitle(noteTitle?:"")
             noteViewModel.setDescription(noteDescription?:"")
+        }else if (noteId=="new_note"){
+            noteViewModel.setTitle("")
+            noteViewModel.setDescription("")
         }
     }
 

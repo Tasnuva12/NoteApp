@@ -54,7 +54,7 @@ import java.time.LocalDate
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun HomeScreen(  navController: NavController? = null,
+fun HomeScreen(  navController: NavController,
                  modifier: Modifier, homeViewModel: HomeScreenViewModel = hiltViewModel(),noteViewModel: NoteScreenViewModel= hiltViewModel()
 ) {
 
@@ -162,7 +162,7 @@ fun HomeScreen(  navController: NavController? = null,
             modifier = Modifier.fillMaxSize() // Takes full screen space
         ) {
             FloatingActionButton(
-                onClick = {  navController?.navigate("${Screen.NoteScreen.route}/123/Test Title/Test Description") },
+                onClick = {  navController.navigate("${Screen.NoteScreen.route}/-1") },
                 containerColor = Color.Black, // Black background
                 shape = CircleShape, // Round shape
                 modifier = Modifier
