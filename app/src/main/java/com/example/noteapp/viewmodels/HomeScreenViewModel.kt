@@ -7,6 +7,7 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.compose.runtime.remember
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -35,14 +36,37 @@ import java.time.LocalTime
 import java.time.temporal.ChronoUnit
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
+import androidx.lifecycle.*
+import com.example.noteapp.model.Note
+
+import com.example.noteapp.repository.NoteRepository
+
 
 @HiltViewModel
 class HomeScreenViewModel  @Inject constructor(
     private val dateRepository: DateRepository,
-    application: Application) : ViewModel() {
+    private val noteRepository: NoteRepository,
 
+    application: Application) : ViewModel() {
+    //text for search
     private val _searchText = MutableLiveData<String>()
     val searchText: LiveData<String> get() = _searchText
+
+    private val _searchResults = MutableLiveData<List<Note>>()
+    val searchResults: LiveData<List<Note>> get() = _searchResults
+
+    fun searchNotes(query:String){
+        _searchText.value=query
+        noteRepository.searchNotes(query).observeForever{notes->
+            if (notes.isNullOrEmpty()) {
+                // Handle the case where there are no results
+                _searchResults.value = emptyList() // or any other placeholder
+            } else {
+                // If there are results, update the _searchResults
+                _searchResults.value = notes
+            }
+        }
+    }
 
     private val _dates = MutableStateFlow<List<LocalDate>>(emptyList()) // Start with an empty list
     val dates: StateFlow<List<LocalDate>> = _dates.asStateFlow()
@@ -50,6 +74,9 @@ class HomeScreenViewModel  @Inject constructor(
     private val dataStorage = DataStorage(application)
 
     private val handler = Handler(Looper.getMainLooper())
+
+
+
 
 
 
@@ -67,6 +94,9 @@ class HomeScreenViewModel  @Inject constructor(
 
 //        scheduleDailyWorker(application)
     }
+
+
+
 
     fun setSearchText(text: String) {
         _searchText.value = text
@@ -151,6 +181,9 @@ class HomeScreenViewModel  @Inject constructor(
         val midnight = now.toLocalDate().plusDays(1).atStartOfDay()
         return ChronoUnit.MILLIS.between(now, midnight)
     }
+
+
+
 
     override fun onCleared() {
         super.onCleared()

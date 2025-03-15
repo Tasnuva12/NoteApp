@@ -24,6 +24,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -45,6 +46,7 @@ import androidx.work.OneTimeWorkRequestBuilder
 import com.example.noteapp.R
 import com.example.noteapp.Screen
 import com.example.noteapp.components.DateCard
+import com.example.noteapp.ui.theme.emptyNoteScreenText
 
 import com.example.noteapp.ui.theme.regularTextStyle
 import com.example.noteapp.viewmodels.HomeScreenViewModel
@@ -54,18 +56,20 @@ import java.time.LocalDate
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun HomeScreen(  navController: NavController,
-                 modifier: Modifier, homeViewModel: HomeScreenViewModel = hiltViewModel(),noteViewModel: NoteScreenViewModel= hiltViewModel()
+fun HomeScreen(
+    navController: NavController,
+    modifier: Modifier,
+    homeViewModel: HomeScreenViewModel = hiltViewModel(),
+    noteViewModel: NoteScreenViewModel = hiltViewModel()
 ) {
-
     val text by homeViewModel.searchText.observeAsState("")
-    //val dates by homeViewModel.dates.collectAsState(emptyList())
     val dates by homeViewModel.dates.collectAsState()
     val currentDate by homeViewModel.currentDate.collectAsState()
+    val notes by noteViewModel.notes.observeAsState(emptyList())
+    val searchResults by homeViewModel.searchResults.observeAsState(emptyList())
 
-    // Check if the last date has passed and update dates if necessary
-
-
+    // Determine whether to show search results or all notes based on whether the search text is empty
+    val shouldShowSearchResults = text.isNotEmpty()
 
     Box(
         modifier = Modifier.fillMaxSize()
@@ -87,7 +91,7 @@ fun HomeScreen(  navController: NavController,
                         contentDescription = "Search Icon",
                         modifier = Modifier.size(20.dp)
                     )
-                     Spacer(modifier = Modifier.width(10.dp))
+                    Spacer(modifier = Modifier.width(10.dp))
                     BasicTextField(
                         value = text,
                         onValueChange = { newText -> homeViewModel.setSearchText(newText) },
@@ -113,7 +117,6 @@ fun HomeScreen(  navController: NavController,
             Spacer(modifier = Modifier.height(10.dp))
 
             LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                Log.d("HomeScreen", "Updated DateEntity List: $dates")
                 items(dates.size) { index ->
                     val date = dates[index]
                     DateCard(
@@ -126,48 +129,57 @@ fun HomeScreen(  navController: NavController,
                 }
             }
 
-            // Scrollable Grid of Notes
-            NoteStaggerGrid(
-                noteViewModel = noteViewModel,
-                modifier =Modifier.weight(1f) ,
-                navController =navController
-                // Takes remaining space but doesn't push the button
-
-            )
+            // Conditionally display either search results or notes
+            if (shouldShowSearchResults) {
+                // If there's search text, show search results
+                if (searchResults.isEmpty()) {
+                    Spacer(modifier = Modifier.height(200.dp))
+                    Text(
+                        text = "No notes found!",
+                        style = emptyNoteScreenText,
+                        modifier = Modifier.align(Alignment.CenterHorizontally)
+                    )
+                } else {
+                    // Display search results in a grid
+                    NoteStaggerGrid(
+                        noteViewModel = noteViewModel,
+                        modifier = Modifier.weight(1f),
+                        navController = navController,
+                        notes = searchResults // Pass search results to the grid
+                    )
+                }
+            } else {
+                // If no search text, show all notes
+                if (notes.isEmpty()) {
+                    Spacer(modifier = Modifier.height(200.dp))
+                    Text(
+                        text = "Write New Notes!",
+                        style = emptyNoteScreenText,
+                        modifier = Modifier.align(Alignment.CenterHorizontally)
+                    )
+                } else {
+                    // Display all notes in a grid
+                    NoteStaggerGrid(
+                        noteViewModel = noteViewModel,
+                        modifier = Modifier.weight(1f),
+                        navController = navController,
+                        notes = notes // Pass all notes to the grid
+                    )
+                }
+            }
         }
 
         // Fixed Floating Button
-//        Box(
-//            modifier = Modifier
-//                .size(50.dp)
-//                .clip(CircleShape)
-//
-//                .background(colorResource(R.color.black))
-//
-//                .align(Alignment.BottomEnd)
-//
-//                .clickable {
-//                    navController?.navigate(Screen.NoteScreen.route)
-//                }
-//        ) {
-//            Icon(
-//                painter = painterResource(id = R.drawable.add),
-//                contentDescription = "Add Button",
-//                tint = Color.White,
-//                modifier = Modifier.align(Alignment.Center)
-//            )
-//        }
-
         Box(
             modifier = Modifier.fillMaxSize() // Takes full screen space
         ) {
             FloatingActionButton(
-                onClick = {  navController.navigate("${Screen.NoteScreen.route}/-1") },
+                onClick = { navController.navigate("${Screen.NoteScreen.route}/-1") },
                 containerColor = Color.Black, // Black background
                 shape = CircleShape, // Round shape
                 modifier = Modifier
                     .align(Alignment.BottomEnd) // Align to bottom right
-                    .padding(end=16.dp,bottom=50.dp) // Adds gap from edges
+                    .padding(end = 16.dp, bottom = 50.dp) // Adds gap from edges
             ) {
                 Icon(
                     imageVector = Icons.Default.Add,
@@ -176,7 +188,6 @@ fun HomeScreen(  navController: NavController,
                 )
             }
         }
-
     }
-
 }
+

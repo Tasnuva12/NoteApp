@@ -36,7 +36,7 @@ import com.example.noteapp.viewmodels.NoteScreenViewModel
 fun NoteScreen(
     navController: NavController, modifier: Modifier = Modifier,
     noteViewModel: NoteScreenViewModel = hiltViewModel(),
-    noteId: String? = "",
+    noteId: Int? = -1,
     noteTitle: String? = "",
     noteDescription: String? = ""
 ) {
@@ -51,9 +51,8 @@ fun NoteScreen(
 
     LaunchedEffect(noteId) {
         if (noteId != null && noteTitle != null && noteDescription != null) {
-            noteViewModel.setTitle(noteTitle?:"")
-            noteViewModel.setDescription(noteDescription?:"")
-        }else if (noteId=="new_note"){
+          noteViewModel.getOneNoteById(noteId)
+        }else if (noteId==0){
             noteViewModel.setTitle("")
             noteViewModel.setDescription("")
         }

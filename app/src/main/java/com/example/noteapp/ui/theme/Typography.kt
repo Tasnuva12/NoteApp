@@ -1,4 +1,6 @@
 package com.example.noteapp.ui.theme
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -56,4 +58,10 @@ val descOfCard= TextStyle(
     fontFamily = productSansFontFamily,
     fontWeight = FontWeight.Normal,
     fontSize = 12.sp
+)
+val emptyNoteScreenText= TextStyle(
+    fontFamily = productSansFontFamily,
+    fontWeight = FontWeight.Normal,
+    fontSize = 20.sp,
+    color = Color.Gray
 )

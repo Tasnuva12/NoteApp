@@ -38,7 +38,7 @@ fun NavGraph(navController: NavHostController,paddingValues: PaddingValues){
 
             )
         ) { backStackEntry ->
-            val noteId = backStackEntry.arguments?.getString("noteId") ?: ""
+            val noteId = backStackEntry.arguments?.getString("noteId")?.toIntOrNull() ?: 0
 
 
             NoteScreen(

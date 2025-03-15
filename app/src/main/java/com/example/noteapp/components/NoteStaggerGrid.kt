@@ -24,9 +24,9 @@ import kotlin.math.absoluteValue
 @Composable
 fun NoteStaggerGrid(
     modifier: Modifier = Modifier, noteViewModel: NoteScreenViewModel = hiltViewModel(),
-    navController: NavController?
+    navController: NavController?,notes:List<Note>
 ) {
-    val notes by noteViewModel.notes.observeAsState(emptyList())
+
 
     LazyVerticalStaggeredGrid(
         columns = StaggeredGridCells.Fixed(2),

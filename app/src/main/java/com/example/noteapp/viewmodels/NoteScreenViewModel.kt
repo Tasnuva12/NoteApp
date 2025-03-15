@@ -1,6 +1,7 @@
 package com.example.noteapp.viewmodels
 
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
@@ -12,6 +13,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+
 
 @HiltViewModel
 class NoteScreenViewModel @Inject constructor(private val repository: NoteRepository) :
@@ -30,7 +32,7 @@ class NoteScreenViewModel @Inject constructor(private val repository: NoteReposi
     val notes: LiveData<List<Note>> = repository.getAllNotes()
 
     //note ID
-    private var _noteId: Int? = null
+    private var _noteId: Int? = 0
     val noteId: Int? get() = _noteId
 
 
@@ -52,69 +54,50 @@ class NoteScreenViewModel @Inject constructor(private val repository: NoteReposi
 
     //inserting  a note to database
     fun insertAndupdateToRoomDatabase(navController: NavController?) {
-        var noteTitle = _title.value?.trim() ?: ""
-        val noteDescription = _desc.value?.trim() ?: ""
+        val noteTitle = _title.value.trim().ifBlank { getFirstTwoWords(_desc.value.trim()) }
+        val noteDescription = _desc.value.trim()
 
-        // If the title is empty, set the title to the first two words of the description
-        if (noteTitle.isBlank()) {
-            noteTitle = getFirstTwoWords(noteDescription)
-        }
-
-        // If both title and description are blank, navigate back to HomeScreen
         if (noteTitle.isBlank() && noteDescription.isBlank()) {
-            // If noteId is -1, we simply navigate to the Home screen without any other actions
-            if (_noteId == -1) {
+            if (_noteId == 0) {  // If new note, just navigate back
                 navController?.navigate(Screen.HomeScreen.route) {
                     popUpTo(Screen.HomeScreen.route) { inclusive = true }
                 }
-                return // Stop execution here
+                return
             }
 
-            // If the noteId is not -1 (meaning we are updating an existing note), delete the note
-            _noteId?.takeIf { it != -1 }?.let { deleteNote() }
-
+            // If existing note, delete and navigate back
+            deleteNote()
             navController?.navigate(Screen.HomeScreen.route) {
                 popUpTo(Screen.HomeScreen.route) { inclusive = true }
             }
-            return // Stop execution here
+            return
         }
 
-
-        // Start coroutine for database operation
         viewModelScope.launch {
-            // Get the existing note if the noteId is not -1
-            val existingNote = if (_noteId != -1) {
-                repository.getNoteById(_noteId!!)  // Move this inside the coroutine
-            } else {
-                null
-            }
+            if (_noteId != 0) {
+                val existingNote = repository.getNoteById(_noteId!!)
 
-            // If the note is identical to the existing note (no changes), navigate back
-            if (_noteId != -1 && existingNote?.noteTitle == noteTitle && existingNote?.noteDescription == noteDescription) {
-                navController?.navigate(Screen.HomeScreen.route) {
-                    popUpTo(Screen.HomeScreen.route) { inclusive = true }
+                // If nothing changed, just navigate back
+                if (existingNote?.noteTitle == noteTitle && existingNote.noteDescription == noteDescription) {
+                    navController?.navigate(Screen.HomeScreen.route) {
+                        popUpTo(Screen.HomeScreen.route) { inclusive = true }
+                    }
+                    return@launch
                 }
-                return@launch
-            }
 
-            // Insert a new note if _noteId is -1, or update an existing note if data has changed
-            if (_noteId == -1) {
-                if (noteTitle.isNotBlank() || noteDescription.isNotBlank()) {
-                    val insertNote = Note(noteTitle = noteTitle, noteDescription = noteDescription)
-                    repository.insert(insertNote)
-                }
+                // Update existing note
+                repository.update(Note(id = _noteId!!, noteTitle = noteTitle, noteDescription = noteDescription))
             } else {
-                // Update existing note only if title or description has changed
-                val updateNote = Note(id = _noteId!!, noteTitle = noteTitle, noteDescription = noteDescription)
-                repository.update(updateNote)
+                // Insert new note
+                repository.insert(Note(noteTitle = noteTitle, noteDescription = noteDescription))
             }
 
-            // Navigate back to HomeScreen after insert or update operation
             navController?.navigate(Screen.HomeScreen.route) {
                 popUpTo(Screen.HomeScreen.route) { inclusive = true }
             }
         }
     }
+
 
 
     fun getFirstTwoWords(description: String): String {
@@ -128,7 +111,7 @@ class NoteScreenViewModel @Inject constructor(private val repository: NoteReposi
 
     //delete a note
     fun deleteNote() {
-        noteId?.takeIf { it != -1 }?.let { id ->
+        noteId?.takeIf { it != 0 }?.let { id ->
             viewModelScope.launch {
 
                 val noteToDelete = repository.getNoteById(id)
@@ -143,8 +126,18 @@ class NoteScreenViewModel @Inject constructor(private val repository: NoteReposi
 
     //get one note by id
     fun getOneNoteById(noteId: Int) {
-
+        viewModelScope.launch {
+            val note = repository.getNoteById(noteId)
+            note?.let {
+                _title.value = it.noteTitle
+                _desc.value = it.noteDescription
+                _noteId = it.id
+            }
+        }
     }
+
+
+
 
 
 }
