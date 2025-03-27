@@ -75,8 +75,8 @@ fun NoteScreen(
                 )
             Spacer(modifier = Modifier.padding(75.dp))
             Icon(
-                painter = painterResource(id = R.drawable.clipboardtext),
-                contentDescription = "Your Image Description",
+                painter = painterResource(id = R.drawable.delete),
+                contentDescription = "Delete Button",
 
             )
 //            Spacer(modifier = Modifier.padding(10.dp))

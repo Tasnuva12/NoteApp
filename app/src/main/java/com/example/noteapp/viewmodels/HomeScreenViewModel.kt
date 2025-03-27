@@ -148,7 +148,7 @@ class HomeScreenViewModel  @Inject constructor(
 
 
     private fun generateNextDates(): List<LocalDate> {
-        val dates = List(5) { LocalDate.now().plusDays(it.toLong()) }
+        val dates = List(6) { LocalDate.now().plusDays(it.toLong()) }
         Log.d("HomeScreenViewModel", "Generated Dates: $dates")
         return dates
     }

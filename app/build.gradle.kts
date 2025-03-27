@@ -101,6 +101,9 @@ dependencies {
     //workmanager
     implementation ("androidx.work:work-runtime:2.10.0")
 
+    //constraintlayout
+    implementation("androidx.constraintlayout:constraintlayout-compose-android:1.1.1")
+
 
 
     // Testing
